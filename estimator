@@ -1,0 +1,29 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import scipy
+import scipy.signal
+chirp_length=2e-3      # Seconds
+f0=30e9                # Hz
+f1=40e9                # Hz
+c = 3e8                # meters per second
+target_range = 2       # meters
+n_samples = 5000000    # dimensionless
+time_delay = 2*target_range/c
+sampling_rate = n_samples/chirp_length
+t_axis = np.linspace(0, chirp_length, n_samples)
+transmit_chirp = scipy.signal.chirp(t_axis, f0=f0, f1=f1, t1=chirp_length, method='linear')
+samples_until_return = int(sampling_rate * time_delay)
+t_axis = np.linspace(0, chirp_length, n_samples+samples_until_return)
+nan_pad = np.full(samples_until_return, np.nan)
+receive_chirp = np.append(nan_pad, transmit_chirp, axis=0)
+transmit_chirp = np.append(transmit_chirp, nan_pad, axis=0)
+mixed = np.multiply(receive_chirp, transmit_chirp)
+fft = scipy.fft.fft(mixed[samples_until_return:-samples_until_return])
+fft_power = abs(fft[0:n_samples//2])
+xf = scipy.fft.fftfreq(n_samples,chirp_length/n_samples)
+x_ax_p = xf[0:n_samples//2]
+df = pd.DataFrame({'freq':x_ax_p, 'power':fft_power})
+f_max_power = float(df['freq'][df['power']==np.max(df['power'])])
+radar_range = c*f_max_power*chirp_length/(2*(f1-f0))
+print(f'Radar range: {radar_range} m')
