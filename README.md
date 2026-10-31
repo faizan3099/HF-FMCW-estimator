@@ -1,7 +1,5 @@
 # FMCW Radar Simulator
 
-> *Bringing radar physics to life—one equation, one waveform, and one simulation at a time.*
-
 ## Overview
 
 This project is an attempt to build an **FMCW (Frequency-Modulated Continuous Wave) radar simulator** that pushes as close to physical reality as is practical in software.
