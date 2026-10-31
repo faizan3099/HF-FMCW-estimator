@@ -1,0 +1,48 @@
+#Antenna Pattern definition ((Angle -> Gain)) (Amplitude_values)
+from pylab import *
+
+theta = np.arange(-pi/2, pi/2, 0.01)  # Adjusted range to center around 180 degrees
+la = 0.0038
+N = 10
+N2 = N / 2
+k = 2 * pi / la
+d = 0.5 * la
+
+# Set beta to 90 degrees
+beta = [pi/2]
+
+psi = []
+AF = []
+AFn = []
+
+# List to store amplitude values at different angles
+amplitude_values = []
+
+for i in range(len(beta)):
+    psi.append(k * d * cos(theta) + beta[i])
+    AF.append(1 / N * (sin(N2 * psi[i])) / (sin(psi[i] / 2)))
+    AFn.append(abs(AF[i] / max(abs(AF[i]))))
+
+    # Store amplitude values at different angles
+    amplitude_values.append(list(AFn[i]))
+
+# Print amplitude values at different angles
+for idx, angle in enumerate(theta):
+    print(f"Angle: {degrees(angle)} degrees, Amplitude: {amplitude_values[0][idx]}")
+
+# Display the contents of the amplitude_values list
+#print("\nContents of amplitude_values list:")
+#for idx, values_at_angle in enumerate(amplitude_values[0]):
+    #print(f"Angle: {degrees(theta[idx])} degrees, Amplitude: {values_at_angle}")
+
+# Plot the antenna pattern at 90 degrees
+axes(polar=True)
+title(r'$\beta = 90{\circ}$')
+
+# Adjust the tick labels for degrees
+theta_degrees = np.degrees(theta)
+rgrids(np.arange(0.2, 1.2, 0.2), labels=['0.2', '0.4', '0.6', '0.8', '1.0'])
+
+plot(theta, AFn[0])
+plt.savefig("Antenna Pattern.pdf", format='pdf', bbox_inches='tight')
+show()
